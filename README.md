@@ -21,7 +21,7 @@ This Docker image is based on the official Ubuntu 24.04 image and comes pre-conf
 To run the container, use the following command:
 
 ```sh
-docker run -p 8888:8888 -v /scripts:/home/gmavuri/work your-docker-username/jupyter-pyspark-image
+docker run -p 8888:8888 -v /scripts:/home/gmavuri/work gouthammavuri/jupyter-pyspark-image
 ```
 
 ## License
