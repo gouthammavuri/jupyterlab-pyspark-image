@@ -47,10 +47,10 @@ RUN wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py \
     && /usr/local/bin/python3.11 -m pip install --upgrade pip --verbose
 
 # Install JupyterLab and IPython kernel
-RUN /usr/local/bin/python3.11 -m pip install jupyterlab ipykernel
+RUN /usr/local/bin/python3.11 -m pip install jupyterlab ipykernel notebook
 
 # Install common packages used with PySpark
-RUN /usr/local/bin/python3.11 -m pip install pandas numpy matplotlib seaborn scipy scikit-learn plotly ipywidgets findspark pyspark==3.4.3
+RUN python3 -m pip install pandas numpy matplotlib seaborn scipy scikit-learn plotly ipywidgets findspark pyspark==3.4.3
 
 # Confirm installations
 RUN bash -c "source /root/.bashrc && /usr/local/bin/python3.11 -m pip --version && jupyter-lab --version"
@@ -72,13 +72,13 @@ RUN wget https://archive.apache.org/dist/spark/spark-3.4.3/spark-3.4.3-bin-hadoo
     && mv spark-3.4.3-bin-hadoop3 /usr/local/spark \
     && rm spark-3.4.3-bin-hadoop3.tgz
 
+# COPY JAR files to the Spark jars directory
+COPY drivers/* /usr/local/spark/jars/
+
 # Set SPARK_HOME environment variable
 ENV SPARK_HOME=/usr/local/spark
 ENV CLASSPATH=/usr/local/spark/jars/*
 ENV PATH=$SPARK_HOME/bin:$PATH
-
-# Create Jupyter configuration file
-RUN mkdir -p /root/.jupyter && echo "c.ServerApp.token = ''" >> /root/.jupyter/jupyter_server_config.py
 
 # Clear JupyterLab state
 RUN jupyter lab clean
@@ -97,5 +97,13 @@ EXPOSE 8888
 # Add a health check to verify that the JupyterLab server is running
 HEALTHCHECK CMD curl --fail http://localhost:8888 || exit 1
 
+# Create Jupyter configuration file to set token and password
+RUN mkdir -p /root/.jupyter \
+    && echo "c.NotebookApp.token = 'bnd1E8zy4Ta26U107V6y3BX1p6M4y9P0ep704T1864iqp0XN'" >> /root/.jupyter/jupyter_notebook_config.py
+
+# Verify the creation of .jupyter directory and its content
+RUN ls -alh /root/.jupyter && cat /root/.jupyter/jupyter_notebook_config.py
+
+
 # Set default command to start Jupyter Notebook
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
