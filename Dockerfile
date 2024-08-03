@@ -47,7 +47,7 @@ RUN wget https://bootstrap.pypa.io/get-pip.py -O get-pip.py \
     && /usr/local/bin/python3.11 -m pip install --upgrade pip --verbose
 
 # Install JupyterLab and IPython kernel
-RUN /usr/local/bin/python3.11 -m pip install jupyterlab ipykernel notebook
+RUN /usr/local/bin/python3.11 -m pip install jupyterlab ipykernel notebook pandas sqlalchemy pyodbc JayDeBeApi
 
 # Install common packages used with PySpark
 RUN python3 -m pip install pandas numpy matplotlib seaborn scipy scikit-learn plotly ipywidgets findspark pyspark==3.4.3
